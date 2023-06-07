@@ -28,20 +28,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             locationManager?.distanceFilter = 100
             locationManager?.desiredAccuracy = kCLLocationAccuracyBest
             locationManager?.allowsBackgroundLocationUpdates = true
-            locationManager?.startUpdatingLocation()
+            locationManager?.startMonitoringSignificantLocationChanges()
         } else {
             locationManager?.delegate = self
             locationManager?.distanceFilter = 100
             locationManager?.desiredAccuracy = kCLLocationAccuracyBest
             locationManager?.allowsBackgroundLocationUpdates = true
             if CLLocationManager.authorizationStatus() == .notDetermined {
-                locationManager?.requestAlwaysAuthorization()
+                locationManager?.requestWhenInUseAuthorization()
             }
             else if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
                 locationManager?.requestAlwaysAuthorization()
             }
             else if CLLocationManager.authorizationStatus() == .authorizedAlways {
-//                locationManager?.startUpdatingLocation()
                 locationManager?.startMonitoringSignificantLocationChanges()
             }
         }
@@ -77,8 +76,11 @@ extension AppDelegate: CLLocationManagerDelegate {
             manager.stopMonitoringSignificantLocationChanges()
             manager.startMonitoringSignificantLocationChanges()
         }
-        NSLog("app tracking_test long didUpdateLocations: \(self.locationManager?.location?.coordinate.longitude ?? 0.0) -- lat: \( self.locationManager?.location?.coordinate.latitude ?? 0.0)")
+        if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
 
+            locationManager?.requestAlwaysAuthorization()
+        }
+        NSLog("app tracking_test long didUpdateLocations: \(self.locationManager?.location?.coordinate.longitude ?? 0.0) -- lat: \( self.locationManager?.location?.coordinate.latitude ?? 0.0)")
     }
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
@@ -88,6 +90,10 @@ extension AppDelegate: CLLocationManagerDelegate {
         manager.stopMonitoring(for: region)
         NSLog("didExitRegion")
         manager.startMonitoringSignificantLocationChanges()
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        locationManager?.requestAlwaysAuthorization()
     }
 
     func createRegion(location:CLLocation?) {
