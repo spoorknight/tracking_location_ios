@@ -25,13 +25,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 locationManager = CLLocationManager()
             }
             locationManager?.delegate = self
-            locationManager?.distanceFilter = 100
+            locationManager?.distanceFilter = 10
             locationManager?.desiredAccuracy = kCLLocationAccuracyBest
             locationManager?.allowsBackgroundLocationUpdates = true
             locationManager?.startMonitoringSignificantLocationChanges()
         } else {
             locationManager?.delegate = self
-            locationManager?.distanceFilter = 100
+            locationManager?.distanceFilter = 10
             locationManager?.desiredAccuracy = kCLLocationAccuracyBest
             locationManager?.allowsBackgroundLocationUpdates = true
             if CLLocationManager.authorizationStatus() == .notDetermined {
@@ -77,10 +77,37 @@ extension AppDelegate: CLLocationManagerDelegate {
             manager.startMonitoringSignificantLocationChanges()
         }
         if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
-
             locationManager?.requestAlwaysAuthorization()
         }
-        NSLog("app tracking_test long didUpdateLocations: \(self.locationManager?.location?.coordinate.longitude ?? 0.0) -- lat: \( self.locationManager?.location?.coordinate.latitude ?? 0.0)")
+         let dateOld = UserDefaults.standard.string(forKey: "dateOld")
+            let lat = UserDefaults.standard.double(forKey: "lat")
+            let long = UserDefaults.standard.double(forKey: "long")
+            if(dateOld != nil){
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ssZ"
+                let oldDate = dateFormatter.date(from: dateOld!)!
+                if minutesBetweenDates(oldDate, Date()) >= 3 { // >= 3 minutes
+                    if(lat != 0.0 || long != 0.0){
+                        let coordinate₀ = CLLocation(latitude: lat, longitude: long)
+                        let coordinate₁ = CLLocation(latitude: self.locationManager?.location?.coordinate.latitude ?? 0.0, longitude: self.locationManager?.location?.coordinate.longitude ?? 0.0)
+                        let distanceInMeters = coordinate₀.distance(from: coordinate₁)
+                        if(distanceInMeters >= 100){ // >=100m
+                            //Do something
+                            
+                            NSLog("app tracking username:\(username ?? "")-token:\(token ?? "") ---------- didUpdateLocations: \(self.locationManager?.location?.coordinate.longitude ?? 0.0) -- lat: \( self.locationManager?.location?.coordinate.latitude ?? 0.0)")
+                        
+                            UserDefaults.standard.set(self.locationManager?.location?.coordinate.latitude ?? 0.0, forKey: "lat")
+                            UserDefaults.standard.set(self.locationManager?.location?.coordinate.longitude ?? 0.0, forKey: "long")
+                        }
+                    }else{
+                        UserDefaults.standard.set(self.locationManager?.location?.coordinate.latitude ?? 0.0, forKey: "lat")
+                        UserDefaults.standard.set(self.locationManager?.location?.coordinate.longitude ?? 0.0, forKey: "long")
+                        UserDefaults.standard.set("\(Date())", forKey: "dateOld")
+                    }
+                    }
+            }else{
+                UserDefaults.standard.set("\(Date())", forKey: "dateOld")
+            }
     }
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
