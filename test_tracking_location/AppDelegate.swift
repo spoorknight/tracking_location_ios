@@ -94,7 +94,7 @@ extension AppDelegate: CLLocationManagerDelegate {
                         if(distanceInMeters >= 100){ // >=100m
                             //Do something
                             
-                            NSLog("app tracking username:\(username ?? "")-token:\(token ?? "") ---------- didUpdateLocations: \(self.locationManager?.location?.coordinate.longitude ?? 0.0) -- lat: \( self.locationManager?.location?.coordinate.latitude ?? 0.0)")
+                            NSLog("app tracking didUpdateLocations: \(self.locationManager?.location?.coordinate.longitude ?? 0.0) -- lat: \( self.locationManager?.location?.coordinate.latitude ?? 0.0)")
                         
                             UserDefaults.standard.set(self.locationManager?.location?.coordinate.latitude ?? 0.0, forKey: "lat")
                             UserDefaults.standard.set(self.locationManager?.location?.coordinate.longitude ?? 0.0, forKey: "long")
