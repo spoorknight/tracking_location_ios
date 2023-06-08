@@ -110,6 +110,18 @@ extension AppDelegate: CLLocationManagerDelegate {
             }
     }
     
+    func minutesBetweenDates(_ oldDate: Date, _ newDate: Date) -> CGFloat {
+
+        //get both times sinces refrenced date and divide by 60 to get minutes
+        let newDateMinutes = newDate.timeIntervalSinceReferenceDate/60
+        let oldDateMinutes = oldDate.timeIntervalSinceReferenceDate/60
+
+        //then return the difference
+        return CGFloat(newDateMinutes - oldDateMinutes)
+    }
+    
+    
+    
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         NSLog("didEnterRegion")
     }
