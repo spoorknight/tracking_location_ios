@@ -25,13 +25,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 locationManager = CLLocationManager()
             }
             locationManager?.delegate = self
-            locationManager?.distanceFilter = 10
+            locationManager?.distanceFilter = 50
             locationManager?.desiredAccuracy = kCLLocationAccuracyBest
             locationManager?.allowsBackgroundLocationUpdates = true
             locationManager?.startMonitoringSignificantLocationChanges()
         } else {
             locationManager?.delegate = self
-            locationManager?.distanceFilter = 10
+            locationManager?.distanceFilter = 50
             locationManager?.desiredAccuracy = kCLLocationAccuracyBest
             locationManager?.allowsBackgroundLocationUpdates = true
             if CLLocationManager.authorizationStatus() == .notDetermined {
@@ -99,14 +99,12 @@ extension AppDelegate: CLLocationManagerDelegate {
                             UserDefaults.standard.set(self.locationManager?.location?.coordinate.latitude ?? 0.0, forKey: "lat")
                             UserDefaults.standard.set(self.locationManager?.location?.coordinate.longitude ?? 0.0, forKey: "long")
                         }
-                    }else{
-                        UserDefaults.standard.set(self.locationManager?.location?.coordinate.latitude ?? 0.0, forKey: "lat")
-                        UserDefaults.standard.set(self.locationManager?.location?.coordinate.longitude ?? 0.0, forKey: "long")
-                        UserDefaults.standard.set("\(Date())", forKey: "dateOld")
                     }
                     }
             }else{
-                UserDefaults.standard.set("\(Date())", forKey: "dateOld")
+                UserDefaults.standard.set(self.locationManager?.location?.coordinate.latitude ?? 0.0, forKey: "lat")
+                        UserDefaults.standard.set(self.locationManager?.location?.coordinate.longitude ?? 0.0, forKey: "long")
+                        UserDefaults.standard.set("\(Date())", forKey: "dateOld")
             }
     }
     
@@ -138,7 +136,7 @@ extension AppDelegate: CLLocationManagerDelegate {
     func createRegion(location:CLLocation?) {
         if CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) {
             let coordinate = CLLocationCoordinate2DMake((location?.coordinate.latitude)!, (location?.coordinate.longitude)!)
-            let regionRadius = 500.0
+            let regionRadius = 100.0
             let coords = CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
             let region = CLCircularRegion(center: coords, radius: regionRadius, identifier: "aabb")
             region.notifyOnEntry = true
